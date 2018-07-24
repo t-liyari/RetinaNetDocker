@@ -6,7 +6,7 @@ EXPOSE 6006
 
 RUN apt-get update && apt-get install python-opencv -y && apt-get clean -y
 WORKDIR /tensorflow/tensorflow/examples/
-RUN git clone https://github.com/fizyr/keras-retinanet.git
+RUN git clone https://github.com/admatis/keras-retinanet.git
 WORKDIR keras-retinanet
 RUN pip install Pillow h5py opencv-python --user
 RUN pip install . --user
