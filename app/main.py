@@ -8,7 +8,6 @@ from keras_retinanet.utils.visualization import draw_box, draw_caption
 from keras_retinanet.utils.colors import label_color
 
 # import miscellaneous modules
-import matplotlib.pyplot as plt
 import cv2
 import os
 import numpy as np
@@ -41,7 +40,8 @@ keras.backend.tensorflow_backend.set_session(get_session())
 
 # loading model
 model_path = os.path.join('..','..','..','..','..','..', 'data', 'converted_resnet50_pascal_50.h5')
-model = models.load_model(model_path, backbone_name='resnet50') 
+model = models.load_model(model_path, backbone_name='resnet50')
+print('loaded model!')
 labels_to_names = {0: '0', 1: '1', 2: '2', 3: '3-4', 4: '5-7', 5: '8'}
 
 # application confige
