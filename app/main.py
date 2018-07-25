@@ -17,6 +17,7 @@ def hello_world():
 
 @app.route('/get_bruise_age', methods=['POST'])
 def get_bruise_age():
+  print('innn')
   if 'file' not in request.files:
     print(1)
     return 'error1'
