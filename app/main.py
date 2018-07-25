@@ -6,6 +6,7 @@ from keras_retinanet import models
 from keras_retinanet.utils.image import read_image_bgr, preprocess_image, resize_image
 from keras_retinanet.utils.visualization import draw_box, draw_caption
 from keras_retinanet.utils.colors import label_color
+from keras_retinanet.models.resnet import custom_objects
 
 # import miscellaneous modules
 import cv2
@@ -37,8 +38,9 @@ keras.backend.tensorflow_backend.set_session(get_session())
 
 # loading model
 model_path = os.path.join('..','..','..','..','..','..', 'data', 'converted_resnet50_pascal_50.h5')
-model = models.load_model(model_path, backbone_name='resnet50')
+model = models.load_model(model_path, backbone_name='resnet50', custom_objects=custom_objects)
 print('loaded')
+print(model.summary())
 labels_to_names = {0: '0', 1: '1', 2: '2', 3: '3-4', 4: '5-7', 5: '8'}
 
 # application confige
@@ -71,11 +73,13 @@ def get_bruise_age():
   img_np = np.asarray(img.convert('RGB'))
 
   print('----------')
+  print(img_np)
+  print('----------')
   image = img_np[:, :, ::-1].copy()
   print(image)
-
+# they are not the same
   print('----------')
-  image = read_image_bgr(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+  #image = read_image_bgr(os.path.join(app.config['UPLOAD_FOLDER'], filename))
   print(image)
 
 #   copy to draw on
@@ -84,8 +88,6 @@ def get_bruise_age():
 
   # preprocess image for network
   image = preprocess_image(image)
-  image, scale = resize_image(image)
-
   # process image
   start = time.time()
   boxes, scores, labels = model.predict_on_batch(np.expand_dims(image, axis=0))
