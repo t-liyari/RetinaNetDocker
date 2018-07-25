@@ -18,5 +18,5 @@ RUN pip install flask
 ENV LISTEN_PORT=8008
 EXPOSE 8008
 
-COPY /app /tensorflow/tensorflow/examples/keras-retinanet 
+COPY /app /workdir/keras-retinanet
 #CMD python /app/main.py
