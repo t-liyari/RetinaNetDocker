@@ -13,7 +13,7 @@ RUN pip install . --user
 RUN python setup.py build_ext --inplace
 
 # from here
-RUN pip install flask
+RUN pip install flask flask_cors
 
 ENV LISTEN_PORT=8008
 EXPOSE 8008
