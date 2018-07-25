@@ -27,15 +27,16 @@ def get_bruise_age():
     print(2)
     return 'error2'
   #blob = request.files['file'].read()
-  img = np.asarray(file.convert('RGB'))
-  print('----------')
-  print(img)
+  #img = np.asarray(file.convert('RGB'))
+  #print('----------')
+  #print(img)
 
 #   img2 = img[:, :, ::-1].copy()
 #   print('----------')
 #   print(img2)
 
   #filename = secure_filename(file.filename)
+  contents = file.read()
   filename = file.filename
   file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
   img_np = cv2.imread(os.path.join(app.config['UPLOAD_FOLDER'], filename), -1)
