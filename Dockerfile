@@ -12,4 +12,11 @@ RUN pip install Pillow h5py opencv-python --user
 RUN pip install . --user
 RUN python setup.py build_ext --inplace
 
+# from here
+RUN pip install flask
 
+ENV LISTEN_PORT=8008
+EXPOSE 8008
+
+COPY /app /app
+#CMD python /app/main.py
