@@ -18,5 +18,5 @@ RUN pip install flask
 ENV LISTEN_PORT=8008
 EXPOSE 8008
 
-COPY /app /workdir/app
+COPY /app ./app
 #CMD python /app/main.py
