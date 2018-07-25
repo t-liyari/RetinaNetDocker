@@ -41,7 +41,8 @@ keras.backend.tensorflow_backend.set_session(get_session())
 # loading model
 model_path = os.path.join('..','..','..','..','..','..', 'data', 'converted_resnet50_pascal_50.h5')
 model = models.load_model(model_path, backbone_name='resnet50')
-print('loaded model!')
+print('loaded')
+graph = tf.get_default_graph()
 labels_to_names = {0: '0', 1: '1', 2: '2', 3: '3-4', 4: '5-7', 5: '8'}
 
 # application confige
@@ -70,7 +71,7 @@ def get_bruise_age():
   filename = secure_filename(file.filename)
 
   # maybe remove ?
-  img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename), "JPEG",)
+  img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename), "JPEG")
 
   img_np = np.asarray(img.convert('RGB'))
 
@@ -80,6 +81,7 @@ def get_bruise_age():
 
   print('----------')
   print(image)
+  #image = read_image_bgr()
 
   # copy to draw on
   draw = image.copy()
@@ -91,7 +93,8 @@ def get_bruise_age():
 
   # process image
   start = time.time()
-  boxes, scores, labels = model.predict_on_batch(np.expand_dims(image, axis=0))
+  with graph.as_default():
+      boxes, scores, labels = model.predict_on_batch(np.expand_dims(image, axis=0))
   print('----------')
   print("processing time: ", time.time() - start)
   print('----------')
@@ -102,10 +105,6 @@ def get_bruise_age():
   # visualize detections
   for box, score, label in zip(boxes[0], scores[0], labels[0]):
     print('score: ' + str(score) + 'lable: ' + str(label))
-
-  #contents = file.read()
-  #file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-  #img_np = cv2.imread(os.path.join(app.config['UPLOAD_FOLDER'], filename), -1)
   
   age_range = 0.2
   return 'age_range: ' + str(age_range)
