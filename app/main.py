@@ -1,3 +1,23 @@
+# import keras
+import keras
+
+# import keras_retinanet
+from keras_retinanet import models
+from keras_retinanet.utils.image import read_image_bgr, preprocess_image, resize_image
+from keras_retinanet.utils.visualization import draw_box, draw_caption
+from keras_retinanet.utils.colors import label_color
+
+# import miscellaneous modules
+import matplotlib.pyplot as plt
+import cv2
+import os
+import numpy as np
+import time
+
+# set tf backend to allow memory to grow, instead of claiming everything
+import tensorflow as tf
+
+# our things we add
 from flask import Flask
 from flask import request
 import os
@@ -8,6 +28,23 @@ import numpy as np
 from PIL import Image
 import io
 
+def get_session():
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+    return tf.Session(config=config)
+
+# use this environment flag to change which GPU to use
+#os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+
+# set the modified tf session as backend in keras
+keras.backend.tensorflow_backend.set_session(get_session())
+
+# loading model
+model_path = os.path.join('..','..','..','..','..','..', 'data', 'converted_resnet50_pascal_50.h5')
+model = models.load_model(model_path, backbone_name='resnet50') 
+labels_to_names = {0: '0', 1: '1', 2: '2', 3: '3-4', 4: '5-7', 5: '8'}
+
+# application confige
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
@@ -31,25 +68,44 @@ def get_bruise_age():
   blob = request.files['file'].read()
   img = Image.open(io.BytesIO(blob))
   filename = secure_filename(file.filename)
-  
-  print('----------')
-  print(img)
 
+  # maybe remove ?
   img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename), "JPEG",)
 
-  img2 = np.asarray(img.convert('RGB'))
+  img_np = np.asarray(img.convert('RGB'))
 
-  print('----------')
-  print(img2)
-  img3 = img[:, :, ::-1].copy()
-
-  print('----------')
-  print(img3)
-  #contents = file.read()
-  #file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-  img_np = cv2.imread(os.path.join(app.config['UPLOAD_FOLDER'], filename), -1)
   print('----------')
   print(img_np)
+  image = img_np[:, :, ::-1].copy()
+
+  print('----------')
+  print(image)
+
+  # copy to draw on
+  draw = image.copy()
+  draw = cv2.cvtColor(draw, cv2.COLOR_BGR2RGB)
+
+  # preprocess image for network
+  image = preprocess_image(image)
+  image, scale = resize_image(image)
+
+  # process image
+  start = time.time()
+  boxes, scores, labels = model.predict_on_batch(np.expand_dims(image, axis=0))
+  print('----------')
+  print("processing time: ", time.time() - start)
+  print('----------')
+
+  # correct for image scale
+  boxes /= scale
+
+  # visualize detections
+  for box, score, label in zip(boxes[0], scores[0], labels[0]):
+    print('score: ' + str(score) + 'lable: ' + str(label))
+
+  #contents = file.read()
+  #file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+  #img_np = cv2.imread(os.path.join(app.config['UPLOAD_FOLDER'], filename), -1)
   
   age_range = 0.2
   return 'age_range: ' + str(age_range)
