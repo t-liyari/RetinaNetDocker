@@ -4,6 +4,7 @@ import os
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import cv2
+import numpy as np
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -26,15 +27,16 @@ def get_bruise_age():
     print(2)
     return 'error2'
   blob = request.files['file'].read()
-  print('----------')
-  print(blob)
-
-  filename = secure_filename(file.filename)
-  
-  img = request.files['file'].stream
-
+  img = np.asarray(blob.convert('RGB'))
   print('----------')
   print(img)
+
+  img2 = img[:, :, ::-1].copy()
+  print('----------')
+  print(img2)
+
+  #filename = secure_filename(file.filename)
+  filename = file.filename
   file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
   img_np = cv2.imread(os.path.join(app.config['UPLOAD_FOLDER'], filename), -1)
   print('----------')
