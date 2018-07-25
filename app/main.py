@@ -32,9 +32,6 @@ def get_session():
     config.gpu_options.allow_growth = True
     return tf.Session(config=config)
 
-# use this environment flag to change which GPU to use
-#os.environ["CUDA_VISIBLE_DEVICES"] = "1"
-
 # set the modified tf session as backend in keras
 keras.backend.tensorflow_backend.set_session(get_session())
 
@@ -42,7 +39,7 @@ keras.backend.tensorflow_backend.set_session(get_session())
 model_path = os.path.join('..','..','..','..','..','..', 'data', 'converted_resnet50_pascal_50.h5')
 model = models.load_model(model_path, backbone_name='resnet50')
 print('loaded')
-graph = tf.get_default_graph()
+#graph = tf.get_default_graph()
 labels_to_names = {0: '0', 1: '1', 2: '2', 3: '3-4', 4: '5-7', 5: '8'}
 
 # application confige
@@ -60,12 +57,11 @@ def hello_world():
 def get_bruise_age():
   print('innn')
   if 'file' not in request.files:
-    print(1)
     return 'error1'
   file = request.files['file']
   if file.filename == '' or not file:
-    print(2)
     return 'error2'
+
   blob = request.files['file'].read()
   img = Image.open(io.BytesIO(blob))
   filename = secure_filename(file.filename)
@@ -76,16 +72,16 @@ def get_bruise_age():
   img_np = np.asarray(img.convert('RGB'))
 
   print('----------')
-  print(img_np)
   image = img_np[:, :, ::-1].copy()
+  print(image)
 
   print('----------')
+  image = read_image_bgr(os.path.join(app.config['UPLOAD_FOLDER'], filename))
   print(image)
-  #image = read_image_bgr()
 
-  # copy to draw on
-  draw = image.copy()
-  draw = cv2.cvtColor(draw, cv2.COLOR_BGR2RGB)
+#   copy to draw on
+#   draw = image.copy()
+#   draw = cv2.cvtColor(draw, cv2.COLOR_BGR2RGB)
 
   # preprocess image for network
   image = preprocess_image(image)
@@ -93,8 +89,8 @@ def get_bruise_age():
 
   # process image
   start = time.time()
-  with graph.as_default():
-      boxes, scores, labels = model.predict_on_batch(np.expand_dims(image, axis=0))
+  #with graph.as_default():
+  boxes, scores, labels = model.predict_on_batch(np.expand_dims(image, axis=0))
   print('----------')
   print("processing time: ", time.time() - start)
   print('----------')
@@ -113,4 +109,3 @@ if __name__ == '__main__':
   host = os.environ.get('IP', '0.0.0.0')
   port = int(os.environ.get('PORT', 8008))
   app.run(host=host, port=port)
-  #app.run()
