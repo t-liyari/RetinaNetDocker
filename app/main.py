@@ -40,7 +40,6 @@ model_path = os.path.join('..','..','..','..','..','..', 'data', 'converted_resn
 model = models.load_model(model_path, backbone_name='resnet50')
 print('loaded')
 print(model.summary())
-print(type(model))
 labels_to_names = {0: '0', 1: '1', 2: '2', 3: '3-4', 4: '5-7', 5: '8'}
 
 # application confige
@@ -73,18 +72,17 @@ def get_bruise_age():
   img_np = np.asarray(img.convert('RGB'))
 
   print('----------')
+  print('first option')
   print(img_np)
   print('----------')
+  print('second option')
   image = img_np[:, :, ::-1].copy()
   print(image)
 # they are not the same
   print('----------')
-  #image = read_image_bgr(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+  image = read_image_bgr(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+  print('third option')
   print(image)
-
-#   copy to draw on
-#   draw = image.copy()
-#   draw = cv2.cvtColor(draw, cv2.COLOR_BGR2RGB)
 
   # preprocess image for network
   image = preprocess_image(image)
