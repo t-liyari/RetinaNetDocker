@@ -26,14 +26,14 @@ def get_bruise_age():
   if file.filename == '' or not file:
     print(2)
     return 'error2'
-  blob = request.files['file'].read()
-  img = np.asarray(blob.convert('RGB'))
+  #blob = request.files['file'].read()
+  img = np.asarray(file.convert('RGB'))
   print('----------')
   print(img)
 
-  img2 = img[:, :, ::-1].copy()
-  print('----------')
-  print(img2)
+#   img2 = img[:, :, ::-1].copy()
+#   print('----------')
+#   print(img2)
 
   #filename = secure_filename(file.filename)
   filename = file.filename
