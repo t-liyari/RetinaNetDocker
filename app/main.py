@@ -1,12 +1,45 @@
 from flask import Flask
+from flask import request
 import os
 from flask_cors import CORS
+from werkzeug.utils import secure_filename
+import cv2
 
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
+UPLOAD_FOLDER = './'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/')
 def hello_world():
   return 'Hello, World!'
+
+@app.route('/get_bruise_age', methods=['POST'])
+def get_bruise_age():
+  if 'file' not in request.files:
+    print(1)
+    return 'error1'
+  file = request.files['file']
+  if file.filename == '' or not file:
+    print(2)
+    return 'error2'
+  blob = request.files['file'].read()
+  print('----------')
+  print(blob)
+
+  filename = secure_filename(file.filename)
+  
+  img = request.files['file'].stream
+
+  print('----------')
+  print(img)
+  file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+  img_np = cv2.imread(os.path.join(app.config['UPLOAD_FOLDER'], filename), -1)
+  print('----------')
+  print(img_np)
+  age_range = 0.2
+  return 'age_range: ' + str(age_range)
 
 if __name__ == '__main__':
   host = os.environ.get('IP', '0.0.0.0')
