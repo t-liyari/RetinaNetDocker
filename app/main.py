@@ -39,7 +39,6 @@ keras.backend.tensorflow_backend.set_session(get_session())
 model_path = os.path.join('..','..','..','..','..','..', 'data', 'converted_resnet50_pascal_50.h5')
 model = models.load_model(model_path, backbone_name='resnet50')
 print('loaded')
-#graph = tf.get_default_graph()
 labels_to_names = {0: '0', 1: '1', 2: '2', 3: '3-4', 4: '5-7', 5: '8'}
 
 # application confige
@@ -89,7 +88,6 @@ def get_bruise_age():
 
   # process image
   start = time.time()
-  #with graph.as_default():
   boxes, scores, labels = model.predict_on_batch(np.expand_dims(image, axis=0))
   print('----------')
   print("processing time: ", time.time() - start)
