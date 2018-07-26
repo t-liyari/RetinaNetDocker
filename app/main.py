@@ -89,6 +89,7 @@ def get_bruise_age():
 
   # preprocess image for network
   image = preprocess_image(image)
+  image, scale = resize_image(image)
   # process image
   start = time.time()
   with graph.as_default():
