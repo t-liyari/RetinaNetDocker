@@ -100,13 +100,17 @@ def get_bruise_age():
 
     # correct for image scale
     boxes /= scale
-
+    
+    max_score = 0
+    max_lable = -1
     # visualize detections
     for box, score, label in zip(boxes[0], scores[0], labels[0]):
-        print('score: ' + str(score) + 'lable: ' + str(label))
-        
-  age_range = 0.2
-  return 'age_range: ' + str(age_range)
+        if score > max_score:
+            max_score = score
+            max_lable = label
+
+  print('score: ' + str(max_score) + 'lable: ' + str(max_lable))  
+  return str(max_lable)
 
 if __name__ == '__main__':
   host = os.environ.get('IP', '0.0.0.0')
