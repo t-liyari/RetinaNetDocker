@@ -40,6 +40,7 @@ model_path = os.path.join('..','..','..','..','..','..', 'data', 'converted_resn
 model = models.load_model(model_path, backbone_name='resnet50')
 print('loaded')
 print(model.summary())
+graph = tf.get_default_graph()
 labels_to_names = {0: '0', 1: '1', 2: '2', 3: '3-4', 4: '5-7', 5: '8'}
 
 # application confige
@@ -84,22 +85,25 @@ def get_bruise_age():
   print('third option')
   print(image)
 
+  image = img_np
+
   # preprocess image for network
   image = preprocess_image(image)
   # process image
   start = time.time()
-  boxes, scores, labels = model.predict_on_batch(np.expand_dims(image, axis=0))
-  print('----------')
-  print("processing time: ", time.time() - start)
-  print('----------')
+  with graph.as_default():
+    boxes, scores, labels = model.predict_on_batch(np.expand_dims(image, axis=0))
+    print('----------')
+    print("processing time: ", time.time() - start)
+    print('----------')
 
-  # correct for image scale
-  boxes /= scale
+    # correct for image scale
+    boxes /= scale
 
-  # visualize detections
-  for box, score, label in zip(boxes[0], scores[0], labels[0]):
-    print('score: ' + str(score) + 'lable: ' + str(label))
-  
+    # visualize detections
+    for box, score, label in zip(boxes[0], scores[0], labels[0]):
+        print('score: ' + str(score) + 'lable: ' + str(label))
+        
   age_range = 0.2
   return 'age_range: ' + str(age_range)
 
